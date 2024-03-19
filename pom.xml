@@ -29,6 +29,17 @@
     </dependencies>
     
     <build>
+        <!-- Uses the properties in this file for plugin.yml -->
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>plugin.yml</include>
+                    <include>config.yml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -61,6 +72,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Sets the custom JAR file name (Project name without spaces is good) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <finalName>${project.name}</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
