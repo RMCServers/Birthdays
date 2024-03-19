@@ -53,10 +53,14 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             // Extract player name and birthday from command arguments
             String playerName = args[0];
             String birthday = args[1];
-
+            
             // Set the player's birthday
-            setPlayerBirthday(playerName, birthday);
-            sender.sendMessage("Birthday for " + playerName + " set successfully!");
+            boolean success = setPlayerBirthday(playerName, birthday);
+            if (success) {
+                sender.sendMessage("Birthday for " + playerName + " set successfully!");
+            } else {
+                sender.sendMessage("Failed to set birthday for " + playerName + ". Player not found or invalid birthday format.");
+            }
             return true;
         }
         return false;
@@ -68,6 +72,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             try {
                 dataFile.createNewFile();
             } catch (IOException e) {
+                getLogger().warning("Failed to create birthdays.json file!");
                 e.printStackTrace();
             }
             return;
@@ -93,6 +98,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(json.toJSONString());
         } catch (IOException e) {
+            getLogger().warning("Failed to save birthdays to file!");
             e.printStackTrace();
         }
     }
@@ -103,11 +109,14 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     }
 
     // Set the birthday for a player
-    public void setPlayerBirthday(String playerName, String birthday) {
+    public boolean setPlayerBirthday(String playerName, String birthday) {
         UUID playerId = Utils.getPlayerUUID(playerName);
         if (playerId != null) {
             birthdays.put(playerId, birthday);
-            saveBirthdays();
+            saveBirthdays(); // Save birthdays after adding or updating
+            return true;
+        } else {
+            return false; // Player not found
         }
     }
 
