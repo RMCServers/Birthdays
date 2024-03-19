@@ -4,3 +4,7 @@ author:
 - RobinRMC
 - ChatGPT by OpenAI
 main: nl.rmcservers.birthdays.Birthdays
+commands:
+  setbirthday:
+    description: Set a player's birthday
+    usage: /setbirthday <player> <birthday>
