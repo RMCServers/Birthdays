@@ -33,9 +33,25 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         // Set up command executor
         getCommand("setbirthday").setExecutor(this);
 
-        // Schedule task to check birthdays every 2 minutes (for testing)
-        getServer().getScheduler().runTaskTimer(this, () -> checkBirthdays(), 0L, 20L * 60L * 2L);
-    }
+        // Calculate the time until midnight
+        Calendar now = Calendar.getInstance();
+        Calendar midnight = Calendar.getInstance();
+        midnight.set(Calendar.HOUR_OF_DAY, 0);
+        midnight.set(Calendar.MINUTE, 0);
+        midnight.set(Calendar.SECOND, 0);
+        midnight.set(Calendar.MILLISECOND, 0);
+
+        long delayUntilMidnight = midnight.getTimeInMillis() - now.getTimeInMillis();
+
+        // Convert delay from milliseconds to ticks (assuming 20 ticks per second)
+        long ticksUntilMidnight = delayUntilMidnight / 1000 * 20;
+
+        // Schedule the task to execute at midnight
+        getServer().getScheduler().runTaskLater(this, () -> {
+            // Execute check
+            checkBirthdays();
+        }, ticksUntilMidnight);
+
 
     private void loadConfig() {
         saveDefaultConfig();
