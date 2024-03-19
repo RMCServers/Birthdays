@@ -1,3 +1,5 @@
+package nl.rmcservers.birthdays;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,8 @@ import java.util.UUID;
 
 import org.json.simple.JSONObject;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import nl.rmcservers.birthdays.Utils;
 
 public class Birthdays extends JavaPlugin implements CommandExecutor {
     
