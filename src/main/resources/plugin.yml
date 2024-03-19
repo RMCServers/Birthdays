@@ -1,0 +1,6 @@
+name: Birthdays
+version: 1.0
+author:
+- RobinRMC
+- ChatGPT by OpenAI
+main: nl.rmcservers.birthdays.Birthdays
