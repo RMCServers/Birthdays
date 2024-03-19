@@ -15,7 +15,7 @@ import java.util.UUID;
 import org.json.simple.JSONObject;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class BirthdayPlugin extends JavaPlugin implements CommandExecutor {
+public class Birthdays extends JavaPlugin implements CommandExecutor {
     
     private Map<UUID, String> birthdays = new HashMap<>();
     private File dataFile;
