@@ -1,2 +1,2 @@
 # Default configuration for BirthdayPlugin
-birthday_command: "say This is a test, %player%!"
+birthday_command: "luckperms user %player% parent addtemp jarig 24h accumulate"
