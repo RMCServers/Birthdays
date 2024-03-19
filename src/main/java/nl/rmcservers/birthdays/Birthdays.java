@@ -3,7 +3,6 @@ package nl.rmcservers.birthdays;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,7 +19,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import nl.rmcservers.birthdays.Utils;
 
 public class Birthdays extends JavaPlugin implements CommandExecutor {
-    
+
     private Map<UUID, String> birthdays = new HashMap<>();
     private File dataFile;
     private String birthdayCommand;
@@ -41,7 +40,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("setbirthday")) {
-            if (!sender.hasPermission("birthday.set") && !(sender instanceof ConsoleCommandSender) && !(sender.isOp())) {
+            if (!sender.hasPermission("birthday.set") && !sender.isOp()) {
                 sender.sendMessage("You don't have permission to use this command!");
                 return true;
             }
@@ -51,17 +50,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
                 return true;
             }
 
-            // Check if the player is online
-            Player targetPlayer = getServer().getPlayer(args[0]);
-            if (targetPlayer == null) {
-                sender.sendMessage("Player not found or not online!");
-                return true;
-            }
-
-            String playerName = targetPlayer.getName();
+            // Extract player name and birthday from command arguments
+            String playerName = args[0];
             String birthday = args[1];
-            birthdays.put(targetPlayer.getUniqueId(), birthday);
-            saveBirthdays();
+
+            // Set the player's birthday
+            setPlayerBirthday(playerName, birthday);
             sender.sendMessage("Birthday for " + playerName + " set successfully!");
             return true;
         }
@@ -106,6 +100,15 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     private void executeBirthdayCommand(UUID playerId) {
         String command = birthdayCommand.replace("%player%", getServer().getOfflinePlayer(playerId).getName());
         getServer().dispatchCommand(getServer().getConsoleSender(), command);
+    }
+
+    // Set the birthday for a player
+    public void setPlayerBirthday(String playerName, String birthday) {
+        UUID playerId = Utils.getPlayerUUID(playerName);
+        if (playerId != null) {
+            birthdays.put(playerId, birthday);
+            saveBirthdays();
+        }
     }
 
     // Check birthdays and execute command if it's someone's birthday
