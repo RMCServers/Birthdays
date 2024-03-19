@@ -112,12 +112,24 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     public boolean setPlayerBirthday(String playerName, String birthday) {
         UUID playerId = Utils.getPlayerUUID(playerName);
         if (playerId != null) {
+            // Check if the birthday format is valid (e.g., "MM-DD")
+            if (!isValidDateFormat(birthday)) {
+            getLogger().warning("Invalid birthday format for player '" + playerName + "'. Please use the format 'MM-DD'.");
+            return false;
+            }
+
             birthdays.put(playerId, birthday);
             saveBirthdays(); // Save birthdays after adding or updating
             return true;
         } else {
+            getLogger().warning("Player '" + playerName + "' not found!");
             return false; // Player not found
         }
+    }
+
+    private boolean isValidDateFormat(String date) {
+        // The expected format is "MM-DD"
+        return date.matches("\\d{2}-\\d{2}");
     }
 
     // Check birthdays and execute command if it's someone's birthday
