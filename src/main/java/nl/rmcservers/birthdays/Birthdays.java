@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -28,7 +29,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     public void onEnable() {
         loadConfig();
         loadBirthdays();
+
+        // Set up command executor
         getCommand("setbirthday").setExecutor(this);
+
+        // Schedule task to check birthdays every 2 minutes (for testing)
+        getServer().getScheduler().runTaskTimer(this, () -> checkBirthdays(), 0L, 20L * 60L * 2L);
     }
 
     private void loadConfig() {
