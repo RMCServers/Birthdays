@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Calendar;
 
 import org.json.simple.JSONObject;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,16 +48,17 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         long ticksUntilMidnight = delayUntilMidnight / 1000 * 20;
 
         // Schedule the task to execute at midnight
-        getServer().getScheduler().runTaskLater(this, () -> {
+        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
             // Execute check
             checkBirthdays();
         }, ticksUntilMidnight);
+    }
 
 
     private void loadConfig() {
         saveDefaultConfig();
         FileConfiguration config = getConfig();
-        birthdayCommand = config.getString("birthday_command", "say This is a test, %player%!");
+        birthdayCommand = config.getString("birthday_command", "luckperms user %player% parent addtemp jarig 24h accumulate");
     }
 
     @Override
