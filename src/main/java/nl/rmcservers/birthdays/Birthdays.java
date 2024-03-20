@@ -50,9 +50,6 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
         long delayUntilMidnight = midnight.getTimeInMillis() - now.getTimeInMillis();
 
-        // Convert delay from milliseconds to ticks (assuming 20 ticks per second)
-        long ticksUntilMidnight = delayUntilMidnight / 1000 * 20;
-
         // Schedule the task to execute at midnight
         taskChainFactory.newSharedChain("BirthdayCheck")
                 .delay(delayUntilMidnight)
