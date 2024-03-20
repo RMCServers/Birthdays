@@ -52,7 +52,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
         // Schedule the task to execute at midnight
         taskChainFactory.newSharedChain("BirthdayCheck")
-                .delay(delayUntilMidnight)
+                .delay((int) delayUntilMidnight)
                 .execute(this::checkBirthdays);
     }
 
