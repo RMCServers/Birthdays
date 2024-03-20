@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Calendar;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.json.simple.JSONObject;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,6 +42,8 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
         // Set up command executor
         getCommand("setbirthday").setExecutor(this);
+        getCommand("listbirthdays").setExecutor(this);
+        getCommand("removebirthday").setExecutor(this);
 
         // Calculate the time until midnight
         Calendar now = Calendar.getInstance();
@@ -86,6 +91,37 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
                 sender.sendMessage("Birthday for " + playerName + " set successfully!");
             } else {
                 sender.sendMessage("Failed to set birthday for " + playerName + ". Player not found or invalid birthday format.");
+            }
+            return true;
+        } else if (cmd.getName().equalsIgnoreCase("listbirthdays")) {
+            if (!sender.hasPermission("birthday.list") && !sender.isOp()) {
+                sender.sendMessage("You don't have permission to use this command!");
+                return true;
+            }
+
+            List<String> birthdayList = listBirthdays();
+            sender.sendMessage("Birthdays:");
+            for (String entry : birthdayList) {
+                sender.sendMessage(entry);
+            }
+            return true;
+        } else if (cmd.getName().equalsIgnoreCase("removebirthday")) {
+            if (!sender.hasPermission("birthday.remove") && !sender.isOp()) {
+                sender.sendMessage("You don't have permission to use this command!");
+                return true;
+            }
+
+            if (args.length != 1) {
+                sender.sendMessage("Usage: /removebirthday <player>");
+                return true;
+            }
+
+            String playerName = args[0];
+            boolean success = removePlayerBirthday(playerName);
+            if (success) {
+                sender.sendMessage("Birthday for " + playerName + " removed successfully!");
+            } else {
+                sender.sendMessage("Failed to remove birthday for " + playerName + ". Player not found.");
             }
             return true;
         }
@@ -169,5 +205,28 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
                 executeBirthdayCommand(playerId);
             }
         }
+    }
+
+    // List all birthdays in alphabetical order
+    private List<String> listBirthdays() {
+        List<String> birthdayList = new ArrayList<>();
+        for (UUID playerId : birthdays.keySet()) {
+            String playerName = getServer().getOfflinePlayer(playerId).getName();
+            String birthday = birthdays.get(playerId);
+            birthdayList.add(playerName + " - " + birthday);
+        }
+        Collections.sort(birthdayList);
+        return birthdayList;
+    }
+
+    // Remove a player's birthday
+    private boolean removePlayerBirthday(String playerName) {
+        UUID playerId = Utils.getPlayerUUID(playerName);
+        if (playerId != null && birthdays.containsKey(playerId)) {
+            birthdays.remove(playerId);
+            saveBirthdays();
+            return true;
+        }
+        return false;
     }
 }
