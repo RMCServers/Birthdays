@@ -90,7 +90,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             if (success) {
                 sender.sendMessage("Birthday for " + playerName + " set successfully!");
             } else {
-                sender.sendMessage("Failed to set birthday for " + playerName + ". Player not found or invalid birthday format.");
+                sender.sendMessage("Failed to set birthday for " + playerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-DD'.");
             }
             return true;
         } else if (cmd.getName().equalsIgnoreCase("listbirthdays")) {
@@ -121,7 +121,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             if (success) {
                 sender.sendMessage("Birthday for " + playerName + " removed successfully!");
             } else {
-                sender.sendMessage("Failed to remove birthday for " + playerName + ". Player not found.");
+                sender.sendMessage("Failed to remove birthday for " + playerName + "! Player not found.");
             }
             return true;
         }
@@ -134,7 +134,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             try {
                 dataFile.createNewFile();
             } catch (IOException e) {
-                getLogger().warning("Failed to create birthdays.json file!");
+                getLogger().severe("Failed to create birthdays.json file!");
                 e.printStackTrace();
             }
             return;
@@ -160,7 +160,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         try (FileWriter writer = new FileWriter(dataFile)) {
             writer.write(json.toJSONString());
         } catch (IOException e) {
-            getLogger().warning("Failed to save birthdays to file!");
+            getLogger().severe("Failed to save birthdays to file!");
             e.printStackTrace();
         }
     }
@@ -176,15 +176,16 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         if (playerId != null) {
             // Check if the birthday format is valid (e.g., "MM-DD")
             if (!isValidDateFormat(birthday)) {
-            getLogger().warning("Invalid birthday format for player '" + playerName + "'. Please use the format 'MM-DD'.");
+            getLogger().warning("Failed to set birthday for " + playerName + ". Invalid birthday format.");
             return false;
             }
 
             birthdays.put(playerId, birthday);
             saveBirthdays(); // Save birthdays after adding or updating
+            getLogger().info("Birthday for player '" + playerName + "' set to '" + birthday + "'.");
             return true;
         } else {
-            getLogger().warning("Player '" + playerName + "' not found!");
+            getLogger().warning("Player '" + playerName + "' not found.");
             return false; // Player not found
         }
     }
@@ -225,8 +226,10 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         if (playerId != null && birthdays.containsKey(playerId)) {
             birthdays.remove(playerId);
             saveBirthdays();
+            getLogger().info("Birthday for player '" + playerName + "' removed.");
             return true;
         }
+        getLogger().warning("Player '" + playerName + "' not found or no birthday set.");
         return false;
     }
 }
