@@ -247,7 +247,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             if (today.equals(birthday)) {
                 executeBirthdayCommand(playerId);
             }
-            getLogger().info("Checked birthday of player '" + playerId + "'!");
+            getLogger().info("Checked birthday of player with UUID '" + playerId + "'!");
         }
     }
 
