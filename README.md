@@ -8,7 +8,7 @@ To install the plugin, simply drop the `Birthdays.jar` file into your server's `
 
 ## Configuration
 
-You can configure the command to execute on a player's birthday in the configuration file.
+You can set the command to execute on a player's birthday in the configuration file.
 
 ## Compatibility
 
