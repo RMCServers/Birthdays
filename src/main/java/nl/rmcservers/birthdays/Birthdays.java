@@ -88,15 +88,15 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
                     }
 
                     // Extract player name and birthday from command arguments
-                    String playerName = args[1];
+                    String setPlayerName = args[1];
                     String birthday = args[2];
 
                     // Set the player's birthday
-                    boolean success = setPlayerBirthday(playerName, birthday);
-                    if (success) {
-                        sender.sendMessage("Birthday for " + playerName + " set successfully!");
+                    boolean setSuccess = setPlayerBirthday(setPlayerName, birthday);
+                    if (setSuccess) {
+                        sender.sendMessage("Birthday for " + setPlayerName + " set successfully!");
                     } else {
-                        sender.sendMessage("Failed to set birthday for " + playerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-DD'.");
+                        sender.sendMessage("Failed to set birthday for " + setPlayerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-DD'.");
                     }
                     return true;
 
@@ -126,12 +126,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
                     }
 
                     // Remove the player's birthday
-                    String playerName = args[1];
-                    boolean success = removePlayerBirthday(removePlayerName);
-                    if (success) {
-                        sender.sendMessage("Birthday for " + playerName + " removed successfully!");
+                    String removePlayerName = args[1];
+                    boolean removeSuccess = removePlayerBirthday(removePlayerName);
+                    if (removeSuccess) {
+                        sender.sendMessage("Birthday for " + removePlayerName + " removed successfully!");
                     } else {
-                        sender.sendMessage("Failed to remove birthday for " + playerName + "! Player not found.");
+                        sender.sendMessage("Failed to remove birthday for " + removePlayerName + "! Player not found.");
                     }
                     return true;
                 default:
@@ -184,22 +184,22 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         getServer().dispatchCommand(getServer().getConsoleSender(), command);
     }
 
-    // Set the birthday for a player
-    public boolean setPlayerBirthday(String playerName, String birthday) {
-        UUID playerId = Utils.getPlayerUUID(playerName);
+    // Set the player's birthday
+    public boolean setPlayerBirthday(String setPlayerName, String birthday) {
+        UUID playerId = Utils.getPlayerUUID(setPlayerName);
         if (playerId != null) {
             // Check if the birthday format is valid (e.g., "MM-DD")
             if (!isValidDateFormat(birthday)) {
-            getLogger().warning("Failed to set birthday for " + playerName + ". Invalid birthday format.");
+            getLogger().warning("Failed to set birthday for " + setPlayerName + ". Invalid birthday format.");
             return false;
             }
 
             birthdays.put(playerId, birthday);
             saveBirthdays(); // Save birthdays after adding or updating
-            getLogger().info("Birthday for player '" + playerName + "' set to '" + birthday + "'.");
+            getLogger().info("Birthday for player '" + setPlayerName + "' set to '" + birthday + "'.");
             return true;
         } else {
-            getLogger().warning("Player '" + playerName + "' not found.");
+            getLogger().warning("Player '" + setPlayerName + "' not found.");
             return false; // Player not found
         }
     }
@@ -226,24 +226,24 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     private List<String> listBirthdays() {
         List<String> birthdayList = new ArrayList<>();
         for (UUID playerId : birthdays.keySet()) {
-            String playerName = getServer().getOfflinePlayer(playerId).getName();
+            String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
             String birthday = birthdays.get(playerId);
-            birthdayList.add(playerName + " - " + birthday);
+            birthdayList.add(listPlayerName + " - " + birthday);
         }
         Collections.sort(birthdayList);
         return birthdayList;
     }
 
-    // Remove a player's birthday
-    private boolean removePlayerBirthday(String playerName) {
-        UUID playerId = Utils.getPlayerUUID(playerName);
+    // Remove the player's birthday
+    private boolean removePlayerBirthday(String removePlayerName) {
+        UUID playerId = Utils.getPlayerUUID(removePlayerName);
         if (playerId != null && birthdays.containsKey(playerId)) {
             birthdays.remove(playerId);
             saveBirthdays();
-            getLogger().info("Birthday for player '" + playerName + "' removed.");
+            getLogger().info("Birthday for player '" + removePlayerName + "' removed.");
             return true;
         }
-        getLogger().warning("Player '" + playerName + "' not found or no birthday set.");
+        getLogger().warning("Player '" + removePlayerName + "' not found or no birthday set.");
         return false;
     }
 }
