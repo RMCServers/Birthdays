@@ -85,6 +85,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.spigotmc:*</include>
+                                    <include>co.aikar:*</include>
                                 </includes>
                             </artifactSet>
                         </configuration>
