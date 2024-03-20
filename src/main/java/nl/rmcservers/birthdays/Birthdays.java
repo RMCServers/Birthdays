@@ -303,3 +303,4 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             }
         }
     }
+}
