@@ -61,9 +61,11 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
 
     private void loadConfig() {
+        getLogger().info("Loading configuration...");
         saveDefaultConfig();
         FileConfiguration config = getConfig();
         birthdayCommand = config.getString("birthday_command", "luckperms user %player% parent addtemp jarig 24h accumulate");
+        getLogger().info("Configuration loaded!");
     }
 
     @Override
@@ -108,10 +110,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
                     // List known birthdays
                     List<String> birthdayList = listBirthdays();
+                    getLogger().info("Sending list...");
                     sender.sendMessage("Birthdays:");
                     for (String entry : birthdayList) {
                         sender.sendMessage(entry);
                     }
+                    getLogger().info("List sent.");
                     return true;
 
                 case "remove":
@@ -143,10 +147,13 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     }
 
     private void loadBirthdays() {
+        getLogger().info("Loading birthdays...");
         dataFile = new File(getDataFolder(), "birthdays.json");
         if (!dataFile.exists()) {
             try {
+                getLogger().info("Creating birthdays.json...");
                 dataFile.createNewFile();
+                getLogger().info("Successfully created birthdays.json!");
             } catch (IOException e) {
                 getLogger().severe("Failed to create birthdays.json file!");
                 e.printStackTrace();
@@ -166,6 +173,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     }
 
     private void saveBirthdays() {
+        getLogger().info("Saving birthdays to file...");
         JSONObject json = new JSONObject();
         for (UUID uuid : birthdays.keySet()) {
             json.put(uuid.toString(), birthdays.get(uuid));
@@ -180,12 +188,14 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     }
 
     private void executeBirthdayCommand(UUID playerId) {
+        getLogger().info("Executing birthday command...");
         String command = birthdayCommand.replace("%player%", getServer().getOfflinePlayer(playerId).getName());
         getServer().dispatchCommand(getServer().getConsoleSender(), command);
     }
 
     // Set the player's birthday
     public boolean setPlayerBirthday(String setPlayerName, String birthday) {
+        getLogger().info("Setting player's birthday...");
         UUID playerId = Utils.getPlayerUUID(setPlayerName);
         if (playerId != null) {
             // Check if the birthday format is valid (e.g., "MM-DD")
@@ -206,11 +216,13 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
     private boolean isValidDateFormat(String date) {
         // The expected format is "MM-DD"
+        getLogger().info("Validating date format...");
         return date.matches("\\d{2}-\\d{2}");
     }
 
     // Check birthdays and execute command if it's someone's birthday
     public void checkBirthdays() {
+        getLogger().info("Checking birthdays...");
         for (UUID playerId : birthdays.keySet()) {
             String birthday = birthdays.get(playerId);
             // Check if it's today
@@ -219,23 +231,31 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             if (today.equals(birthday)) {
                 executeBirthdayCommand(playerId);
             }
+            getLogger().info("Birthdays checked!");
         }
     }
 
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
+        getLogger().info("Looking up birthdays...");
         List<String> birthdayList = new ArrayList<>();
+        getLogger().info("Birthdays acquired.");
+        getLogger().info("Listing birthdays...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
             String birthday = birthdays.get(playerId);
             birthdayList.add(listPlayerName + " - " + birthday);
         }
+        getLogger().info("Birthdays listed.");
+        getLogger().info("Sorting birthdays...");
         Collections.sort(birthdayList);
+        getLogger().info("Birthdays sorted.");
         return birthdayList;
     }
 
     // Remove the player's birthday
     private boolean removePlayerBirthday(String removePlayerName) {
+        getLogger().info("Removing player's birthday...");
         UUID playerId = Utils.getPlayerUUID(removePlayerName);
         if (playerId != null && birthdays.containsKey(playerId)) {
             birthdays.remove(playerId);
