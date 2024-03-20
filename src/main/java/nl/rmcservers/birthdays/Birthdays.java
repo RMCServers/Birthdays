@@ -4,7 +4,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
+import co.aikar.taskchain.BukkitTaskChainFactory;
+import co.aikar.taskchain.TaskChainFactory;
+import co.aikar.taskchain.TaskChain;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -25,11 +27,15 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
     private Map<UUID, String> birthdays = new HashMap<>();
     private File dataFile;
     private String birthdayCommand;
+    private TaskChainFactory taskChainFactory;
 
     @Override
     public void onEnable() {
         loadConfig();
         loadBirthdays();
+
+        // Initialize TaskChainFactory
+        taskChainFactory = BukkitTaskChainFactory.create(this);
 
         // Set up command executor
         getCommand("setbirthday").setExecutor(this);
@@ -48,10 +54,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         long ticksUntilMidnight = delayUntilMidnight / 1000 * 20;
 
         // Schedule the task to execute at midnight
-        getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-            // Execute check
-            checkBirthdays();
-        }, ticksUntilMidnight);
+        taskChainFactory.newSharedChain("BirthdayCheck")
+                .delay(delayUntilMidnight)
+                .execute(this::checkBirthdays);
     }
 
 
