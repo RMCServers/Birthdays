@@ -3,6 +3,7 @@ package nl.rmcservers.birthdays;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
 import co.aikar.taskchain.BukkitTaskChainFactory;
@@ -26,7 +27,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import nl.rmcservers.birthdays.Utils;
 
-public class Birthdays extends JavaPlugin implements CommandExecutor {
+public class Birthdays extends JavaPlugin implements CommandExecutor, TabCompleter {
 
     private Map<UUID, String> birthdays = new HashMap<>();
     private File dataFile;
@@ -43,6 +44,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
         // Set up command executor
         getCommand("birthday").setExecutor(this);
+        getCommand("birthday").setTabCompleter(this);
 
         // Calculate the time until midnight
         Calendar now = Calendar.getInstance();
@@ -245,7 +247,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
             if (today.equals(birthday)) {
                 executeBirthdayCommand(playerId);
             }
-            getLogger().info("Birthdays checked!");
+            getLogger().info("Checked birthday of player '" + playerId + "'!");
         }
     }
 
@@ -303,5 +305,27 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
                 return false;
             }
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("birthday")) {
+            if (args.length == 1) {
+                // If no arguments are provided after "/birthday", suggest subcommands
+                List<String> subCommands = new ArrayList<>();
+                subCommands.add("set");
+                subCommands.add("list");
+                subCommands.add("remove");
+                return subCommands;
+            } else if (args.length == 2) {
+                // If one argument is provided after "/birthday", suggest online player names
+                List<String> onlinePlayerNames = new ArrayList<>();
+                for (Player player : getServer().getOnlinePlayers()) {
+                    onlinePlayerNames.add(player.getName());
+                }
+                return onlinePlayerNames;
+            }
+        }
+        return null; // Return null if no suggestions are available
     }
 }
