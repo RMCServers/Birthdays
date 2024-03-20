@@ -195,22 +195,35 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
     // Set the player's birthday
     public boolean setPlayerBirthday(String setPlayerName, String birthday) {
-        getLogger().info("Setting player's birthday...");
-        UUID playerId = Utils.getPlayerUUID(setPlayerName);
-        if (playerId != null) {
-            // Check if the birthday format is valid (e.g., "MM-DD")
-            if (!isValidDateFormat(birthday)) {
-            getLogger().warning("Failed to set birthday for " + setPlayerName + ". Invalid birthday format.");
-            return false;
-            }
+        getLogger().info("Setting player's birthday for player '" + setPlayerName + "'...");
 
+        // Check if the birthday format is valid (format = 'MM-DD')
+        if (!isValidDateFormat(birthday)) {
+        getLogger().warning("Failed to set birthday for " + setPlayerName + ". Invalid birthday format.");
+        return false;
+        }
+
+        // Check if the player is online
+        Player player = getServer().getPlayerExact(setPlayerName);
+        if (player != null) {
+            UUID playerId = player.getUniqueId();
             birthdays.put(playerId, birthday);
             saveBirthdays(); // Save birthdays after adding or updating
             getLogger().info("Birthday for player '" + setPlayerName + "' set to '" + birthday + "'.");
             return true;
         } else {
-            getLogger().warning("Player '" + setPlayerName + "' not found.");
-            return false; // Player not found
+            // Player is offline, attempt to retrieve UUID
+            OfflinePlayer offlinePlayer = getServer().getOfflinePlayer(setPlayerName);
+            if (offlinePlayer.hasPlayedBefore()) {
+                UUID playerId = offlinePlayer.getUniqueId();
+                birthdays.put(playerId, birthday);
+                saveBirthdays(); // Save birthdays after adding or updating
+                getLogger().info("Birthday for player '" + setPlayerName + "' set to '" + birthday + "'.");
+                return true;
+            } else {
+                getLogger().warning("Player '" + setPlayerName + "' not found or never played on this server.");
+                return false;
+            }
         }
     }
 
@@ -255,15 +268,38 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
     // Remove the player's birthday
     private boolean removePlayerBirthday(String removePlayerName) {
-        getLogger().info("Removing player's birthday...");
-        UUID playerId = Utils.getPlayerUUID(removePlayerName);
-        if (playerId != null && birthdays.containsKey(playerId)) {
-            birthdays.remove(playerId);
-            saveBirthdays();
-            getLogger().info("Birthday for player '" + removePlayerName + "' removed.");
-            return true;
+        getLogger().info("Removing birthday of player '" + removePlayerName + "'...");
+
+        // Check if the player is online
+        Player player = getServer().getPlayerExact(removePlayerName);
+        if (player != null) {
+            UUID playerId = player.getUniqueId();
+            if (birthdays.containsKey(playerId)) {
+                birthdays.remove(playerId);
+                saveBirthdays();
+                getLogger().info("Birthday for player '" + removePlayerName + "' removed.");
+                return true;
+            } else {
+                getLogger().warning("No birthday found for player '" + removePlayerName + "'.");
+                return false;
+            }
+        } else {
+            // Player is offline, attempt to retrieve UUID
+            OfflinePlayer offlinePlayer = getServer().getOfflinePlayer(removePlayerName);
+            if (offlinePlayer.hasPlayedBefore()) {
+                UUID playerId = offlinePlayer.getUniqueId();
+                if (birthdays.containsKey(playerId)) {
+                    birthdays.remove(playerId);
+                    saveBirthdays();
+                    getLogger().info("Birthday for player '" + removePlayerName + "' removed.");
+                    return true;
+                } else {
+                    getLogger().warning("No birthday found for player '" + removePlayerName + "'.");
+                    return false;
+                }
+            } else {
+                getLogger().warning("Player '" + removePlayerName + "' not found or never played on this server.");
+                return false;
+            }
         }
-        getLogger().warning("Player '" + removePlayerName + "' not found or no birthday set.");
-        return false;
     }
-}
