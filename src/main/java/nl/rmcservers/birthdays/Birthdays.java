@@ -41,9 +41,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
         taskChainFactory = BukkitTaskChainFactory.create(this);
 
         // Set up command executor
-        getCommand("setbirthday").setExecutor(this);
-        getCommand("listbirthdays").setExecutor(this);
-        getCommand("removebirthday").setExecutor(this);
+        getCommand("birthday").setExecutor(this);
 
         // Calculate the time until midnight
         Calendar now = Calendar.getInstance();
@@ -70,60 +68,76 @@ public class Birthdays extends JavaPlugin implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (cmd.getName().equalsIgnoreCase("setbirthday")) {
-            if (!sender.hasPermission("birthday.set") && !sender.isOp()) {
-                sender.sendMessage("You don't have permission to use this command!");
+        if (cmd.getName().equalsIgnoreCase("birthday")) {
+            if (args.length == 0) {
+                sender.sendMessage("Usage: /birthday <set|list|remove>");
                 return true;
             }
 
-            if (args.length != 2) {
-                sender.sendMessage("Usage: /setbirthday <player> <birthday>");
-                return true;
-            }
+            String subCommand = args[0].toLowerCase();
+            switch (subCommand) {
+                case "set":
+                    if (!sender.hasPermission("birthday.set") && !sender.isOp()) {
+                        sender.sendMessage("You don't have permission to use this command!");
+                        return true;
+                    }
 
-            // Extract player name and birthday from command arguments
-            String playerName = args[0];
-            String birthday = args[1];
-            
-            // Set the player's birthday
-            boolean success = setPlayerBirthday(playerName, birthday);
-            if (success) {
-                sender.sendMessage("Birthday for " + playerName + " set successfully!");
-            } else {
-                sender.sendMessage("Failed to set birthday for " + playerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-DD'.");
-            }
-            return true;
-        } else if (cmd.getName().equalsIgnoreCase("listbirthdays")) {
-            if (!sender.hasPermission("birthday.list") && !sender.isOp()) {
-                sender.sendMessage("You don't have permission to use this command!");
-                return true;
-            }
+                    if (args.length != 3) {
+                        sender.sendMessage("Usage: /birthday set <player> <birthday>");
+                        return true;
+                    }
 
-            List<String> birthdayList = listBirthdays();
-            sender.sendMessage("Birthdays:");
-            for (String entry : birthdayList) {
-                sender.sendMessage(entry);
-            }
-            return true;
-        } else if (cmd.getName().equalsIgnoreCase("removebirthday")) {
-            if (!sender.hasPermission("birthday.remove") && !sender.isOp()) {
-                sender.sendMessage("You don't have permission to use this command!");
-                return true;
-            }
+                    // Extract player name and birthday from command arguments
+                    String playerName = args[1];
+                    String birthday = args[2];
 
-            if (args.length != 1) {
-                sender.sendMessage("Usage: /removebirthday <player>");
-                return true;
-            }
+                    // Set the player's birthday
+                    boolean success = setPlayerBirthday(playerName, birthday);
+                    if (success) {
+                        sender.sendMessage("Birthday for " + playerName + " set successfully!");
+                    } else {
+                        sender.sendMessage("Failed to set birthday for " + playerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-DD'.");
+                    }
+                    return true;
 
-            String playerName = args[0];
-            boolean success = removePlayerBirthday(playerName);
-            if (success) {
-                sender.sendMessage("Birthday for " + playerName + " removed successfully!");
-            } else {
-                sender.sendMessage("Failed to remove birthday for " + playerName + "! Player not found.");
+                case "list":
+                    if (!sender.hasPermission("birthday.list") && !sender.isOp()) {
+                        sender.sendMessage("You don't have permission to use this command!");
+                        return true;
+                    }
+
+                    // List known birthdays
+                    List<String> birthdayList = listBirthdays();
+                    sender.sendMessage("Birthdays:");
+                    for (String entry : birthdayList) {
+                        sender.sendMessage(entry);
+                    }
+                    return true;
+
+                case "remove":
+                    if (!sender.hasPermission("birthday.remove") && !sender.isOp()) {
+                        sender.sendMessage("You don't have permission to use this command!");
+                        return true;
+                    }
+
+                    if (args.length != 2) {
+                        sender.sendMessage("Usage: /birthday remove <player>");
+                        return true;
+                    }
+
+                    // Remove the player's birthday
+                    String playerName = args[1];
+                    boolean success = removePlayerBirthday(removePlayerName);
+                    if (success) {
+                        sender.sendMessage("Birthday for " + playerName + " removed successfully!");
+                    } else {
+                        sender.sendMessage("Failed to remove birthday for " + playerName + "! Player not found.");
+                    }
+                    return true;
+                default:
+                    sender.sendMessage("Invalid subcommand. Usage: /birthday <set|list|remove>");
+                    return true;
             }
-            return true;
         }
         return false;
     }
