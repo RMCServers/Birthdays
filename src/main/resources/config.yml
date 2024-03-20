@@ -1,2 +1,2 @@
-# Default configuration for BirthdayPlugin
+# Default configuration
 birthday_command: "luckperms user %player% parent addtemp jarig 24h accumulate"
