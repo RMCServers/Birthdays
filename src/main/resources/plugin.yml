@@ -5,6 +5,17 @@ author:
 - ChatGPT by OpenAI
 main: nl.rmcservers.birthdays.Birthdays
 commands:
-  setbirthday:
-    description: Set a player's birthday
-    usage: /setbirthday <player> <birthday>
+  birthday:
+    description: Manage birthdays
+    usage: /<command> <subcommand> [args]
+    aliases: [bd]
+    subcommands:
+      set:
+        description: Set a player's birthday
+        usage: /<command> set <player> <birthday>
+      list:
+        description: List all birthdays
+        usage: /<command> list
+      remove:
+        description: Remove a player's birthday
+        usage: /<command> remove <player>
