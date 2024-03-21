@@ -6,9 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
-import co.aikar.taskchain.BukkitTaskChainFactory;
-import co.aikar.taskchain.TaskChainFactory;
-import co.aikar.taskchain.TaskChain;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -32,34 +29,28 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     private Map<UUID, String> birthdays = new HashMap<>();
     private File dataFile;
     private String birthdayCommand;
-    private TaskChainFactory taskChainFactory;
 
     @Override
     public void onEnable() {
         loadConfig();
         loadBirthdays();
 
-        // Initialize TaskChainFactory
-        taskChainFactory = BukkitTaskChainFactory.create(this);
+        // Schedule the task to run every day at 00:00 (midnight)
+        scheduleDailyTask();
 
         // Set up command executor
         getCommand("birthday").setExecutor(this);
         getCommand("birthday").setTabCompleter(this);
+    }
 
-        // Calculate the time until midnight
-        Calendar now = Calendar.getInstance();
-        Calendar midnight = Calendar.getInstance();
-        midnight.set(Calendar.HOUR_OF_DAY, 0);
-        midnight.set(Calendar.MINUTE, 0);
-        midnight.set(Calendar.SECOND, 0);
-        midnight.set(Calendar.MILLISECOND, 0);
+    private void scheduleDailyTask() {
+        // Calculate the delay until next midnight
+        long currentTime = System.currentTimeMillis();
+        long nextMidnight = ((currentTime / 86400000) + 1) * 86400000; // Next midnight in milliseconds
+        long delay = nextMidnight - currentTime;
 
-        long delayUntilMidnight = midnight.getTimeInMillis() - now.getTimeInMillis();
-
-        // Schedule the task to execute at midnight
-        taskChainFactory.newSharedChain("BirthdayCheck")
-                .delay((int) delayUntilMidnight)
-                .execute(this::checkBirthdays);
+        // Schedule the task to run at midnight and repeat every 24 hours
+        Bukkit.getScheduler().runTaskTimer(this, this::checkBirthdays, delay / 50L, 24 * 60 * 60 * 20L); // Convert milliseconds to ticks
     }
 
 
