@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
 import org.json.simple.JSONObject;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -45,10 +49,15 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     }
 
     private void scheduleDailyTask() {
+        // Get the system default timezone
+        ZoneId zone = ZoneId.systemDefault();
+
+        // Get the current time in the system timezone
+        Instant now = Instant.now(Clock.system(zone));
+
         // Calculate the delay until next midnight
-        long currentTime = System.currentTimeMillis();
-        long nextMidnight = ((currentTime / 86400000) + 1) * 86400000; // Next midnight in milliseconds
-        long delay = nextMidnight - currentTime;
+        Instant nextMidnight = now.atZone(zone).toLocalDate().plusDays(1).atStartOfDay(zone).toInstant();
+        long delay = nextMidnight.toEpochMilli() - now.toEpochMilli();
 
         // Schedule the task to run at midnight and repeat every 24 hours
         Bukkit.getScheduler().runTaskTimer(this, this::checkBirthdays, delay / 50L, 24 * 60 * 60 * 20L); // Convert milliseconds to ticks
