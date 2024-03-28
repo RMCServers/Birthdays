@@ -76,7 +76,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("birthday")) {
             if (args.length == 0) {
-                sender.sendMessage("Usage: /birthday <set|list|remove>");
+                sender.sendMessage("Usage: /birthday <set|list|remove|get>");
                 return true;
             }
 
@@ -142,11 +142,40 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                         sender.sendMessage("Failed to remove birthday for " + removePlayerName + "! Player not found.");
                     }
                     return true;
-                default:
-                    sender.sendMessage("Invalid subcommand. Usage: /birthday <set|list|remove>");
+
+                case "get":
+                    if (!sender.hasPermission("birthday.get") && !sender.isOp()) {
+                        sender.sendMessage("You don't have permission to use this command!");
+                        return true;
+                    }
+
+                    if (args.length != 2) {
+                        sender.sendMessage("Usage: /birthday get <player>");
+                        return true;
+                    }
+
+                    // Get the player's UUID
+                    String getPlayerName = args[1];
+                    Player getPlayer = Bukkit.getPlayer(getPlayerName);
+                    if (getPlayer == null) {
+                        sender.sendMessage("Player '" + getPlayerName + "' not found or not online.");
+                        return true;
+                    }
+
+                    UUID getPlayerUUID = getPlayer.getUniqueId();
+                    String playerBirthday = birthdays.get(getPlayerUUID);
+                    if (playerBirthday != null) {
+                        sender.sendMessage("Birthday of " + getPlayerName + ": " + playerBirthday);
+                    } else {
+                        sender.sendMessage("No birthday found for " + getPlayerName);
+                    }
                     return true;
+
+                default:
+                    sender.sendMessage("Invalid subcommand. Usage: /birthday <set|list|remove|get>");
+                    return true;
+                }
             }
-        }
         return false;
     }
 
@@ -317,14 +346,20 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 subCommands.add("set");
                 subCommands.add("list");
                 subCommands.add("remove");
+				subCommands.add("get");
                 return subCommands;
-            } else if (args.length == 2) {
-                // If one argument is provided after "/birthday", suggest online player names
-                List<String> onlinePlayerNames = new ArrayList<>();
-                for (Player player : getServer().getOnlinePlayers()) {
-                    onlinePlayerNames.add(player.getName());
+            } else if (args.length == 2 && !"list".equalsIgnoreCase(args[0])) {
+                // If two arguments are provided after "/birthday" and the first argument is not "list"
+				if (args[1].isEmpty()) {
+                    List<String> onlinePlayerNames = new ArrayList<>();
+                    for (Player player : getServer().getOnlinePlayers()) {
+                        onlinePlayerNames.add(player.getName());
+                    }
+                    return onlinePlayerNames;
                 }
-                return onlinePlayerNames;
+            } else {
+                // If more than two arguments are provided after "/birthday"
+                return Collections.emptyList(); // Do not suggest anything
             }
         }
         return null; // Return null if no suggestions are available
