@@ -346,11 +346,11 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 subCommands.add("set");
                 subCommands.add("list");
                 subCommands.add("remove");
-				subCommands.add("get");
+                subCommands.add("get");
                 return subCommands;
             } else if (args.length == 2 && !"list".equalsIgnoreCase(args[0])) {
                 // If two arguments are provided after "/birthday" and the first argument is not "list"
-				if (args[1].isEmpty()) {
+                if (args[1].isEmpty()) {
                     List<String> onlinePlayerNames = new ArrayList<>();
                     for (Player player : getServer().getOnlinePlayers()) {
                         onlinePlayerNames.add(player.getName());
