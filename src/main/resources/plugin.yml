@@ -8,14 +8,21 @@ commands:
   birthday:
     description: Manage birthdays
     usage: /<command> <subcommand> [args]
-    aliases: [bd]
+    aliases: [bd, birthdays]
     subcommands:
       set:
         description: Set a player's birthday
         usage: /<command> set <player> <birthday>
+        aliases: [s]  # Abbreviation for 'set'
       list:
         description: List all birthdays
         usage: /<command> list
+        aliases: [l]  # Abbreviation for 'list'
       remove:
         description: Remove a player's birthday
         usage: /<command> remove <player>
+        aliases: [r]  # Abbreviation for 'remove'
+      get:
+        description: Get a player's birthday
+        usage: /<command> get <player>
+        aliases: [g]  # Abbreviation for 'get'
