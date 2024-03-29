@@ -295,9 +295,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         getLogger().info("Looking up players and putting them in a list...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
-            getLogger().info("Found '" + listPlayerName + "'!);
+            getLogger().info("Found '" + listPlayerName + "'!");
             playerList.add(listPlayerName);
-            getLogger().info("Added '" + listPlayerName + "' to list!);
+            getLogger().info("Added '" + listPlayerName + "' to list!");
         }
         getLogger().info("Players listed.");
     
