@@ -83,7 +83,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             String subCommand = args[0].toLowerCase();
             switch (subCommand) {
                 case "set":
-                    if (!sender.hasPermission("birthday.set") && !sender.isOp()) {
+                    if (!sender.hasPermission("birthdays.set") && !sender.isOp()) {
                         sender.sendMessage("You don't have permission to use this command!");
                         return true;
                     }
@@ -102,12 +102,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     if (setSuccess) {
                         sender.sendMessage("Birthday for " + setPlayerName + " set successfully!");
                     } else {
-                        sender.sendMessage("Failed to set birthday for " + setPlayerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-DD'.");
+                        sender.sendMessage("Failed to set birthday for " + setPlayerName + "! Player not found or invalid birthday format. Make sure to use the birthday format 'MM-dd'.");
                     }
                     return true;
 
                 case "list":
-                    if (!sender.hasPermission("birthday.list") && !sender.isOp()) {
+                    if (!sender.hasPermission("birthdays.list") && !sender.isOp()) {
                         sender.sendMessage("You don't have permission to use this command!");
                         return true;
                     }
@@ -123,7 +123,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     return true;
 
                 case "remove":
-                    if (!sender.hasPermission("birthday.remove") && !sender.isOp()) {
+                    if (!sender.hasPermission("birthdays.remove") && !sender.isOp()) {
                         sender.sendMessage("You don't have permission to use this command!");
                         return true;
                     }
@@ -144,7 +144,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     return true;
 
                 case "get":
-                    if (!sender.hasPermission("birthday.get") && !sender.isOp()) {
+                    if (!sender.hasPermission("birthdays.get") && !sender.isOp()) {
                         sender.sendMessage("You don't have permission to use this command!");
                         return true;
                     }
@@ -154,17 +154,10 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                         return true;
                     }
 
-                    // Get the player's UUID
+                    // Get the player's birthday
                     String getPlayerName = args[1];
-                    Player getPlayer = Bukkit.getPlayer(getPlayerName);
-                    if (getPlayer == null) {
-                        sender.sendMessage("Player '" + getPlayerName + "' not found or not online.");
-                        return true;
-                    }
-
-                    UUID getPlayerUUID = getPlayer.getUniqueId();
-                    String playerBirthday = birthdays.get(getPlayerUUID);
-                    if (playerBirthday != null) {
+                    boolean getSuccess = getPlayerBirthday(getPlayerName);
+                    if (getSuccess) {
                         sender.sendMessage("Birthday of " + getPlayerName + ": " + playerBirthday);
                     } else {
                         sender.sendMessage("No birthday found for " + getPlayerName);
@@ -227,10 +220,10 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     }
 
     // Set the player's birthday
-    public boolean setPlayerBirthday(String setPlayerName, String birthday) {
+    private boolean setPlayerBirthday(String setPlayerName, String birthday) {
         getLogger().info("Setting player's birthday for player '" + setPlayerName + "'...");
 
-        // Check if the birthday format is valid (format = 'MM-DD')
+        // Check if the birthday format is valid (format = 'MM-dd')
         if (!isValidDateFormat(birthday)) {
         getLogger().warning("Failed to set birthday for " + setPlayerName + ". Invalid birthday format.");
         return false;
@@ -261,18 +254,18 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     }
 
     private boolean isValidDateFormat(String date) {
-        // The expected format is "MM-DD"
+        // The expected format is "MM-dd"
         getLogger().info("Validating date format...");
         return date.matches("\\d{2}-\\d{2}");
     }
 
-    // Check birthdays and execute command if it's someone's birthday
-    public void checkBirthdays() {
+    // Check all birthdays and execute the configured command if the system date matches someone's birthday
+    private void checkBirthdays() {
         getLogger().info("Checking birthdays...");
         for (UUID playerId : birthdays.keySet()) {
             String birthday = birthdays.get(playerId);
-            // Check if it's today
-            // For simplicity, let's assume the birthday format is 'MM-DD'
+            // Check if the system date matches someone's birthday
+            // The date format is 'MM-dd'
             String today = Utils.getCurrentDate();
             if (today.equals(birthday)) {
                 executeBirthdayCommand(playerId);
@@ -293,9 +286,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             birthdayList.add(listPlayerName + " - " + birthday);
         }
         getLogger().info("Birthdays listed.");
+    
+        // Sort the list alphabetically
         getLogger().info("Sorting birthdays...");
-        Collections.sort(birthdayList);
+        birthdayList.sort(Comparator.naturalOrder());
         getLogger().info("Birthdays sorted.");
+
         return birthdayList;
     }
 
@@ -332,6 +328,42 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 }
             } else {
                 getLogger().warning("Player '" + removePlayerName + "' not found or never played on this server.");
+                return false;
+            }
+        }
+    }
+
+    // Get the player's birthday
+    private boolean getPlayerBirthday(String getPlayerName) {
+        getLogger().info("Getting birthday of player '" + getPlayerName + "'...");
+
+        // Check if the player is online
+        Player player = Bukkit.getPlayerExact(getPlayerName);
+        if (player != null) {
+            UUID playerId = player.getUniqueId();
+            String playerBirthday = birthdays.get(playerId);
+            if (playerBirthday != null) {
+                getLogger().info("Birthday of " + getPlayerName + ": " + playerBirthday);
+                return true;
+            } else {
+                getLogger().warning("No birthday found for " + getPlayerName);
+                return false;
+            }
+        } else {
+            // Player is offline, attempt to retrieve UUID
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getPlayerName);
+            if (offlinePlayer.hasPlayedBefore()) {
+                UUID playerId = offlinePlayer.getUniqueId();
+                String playerBirthday = birthdays.get(playerId);
+                if (playerBirthday != null) {
+                    getLogger().info("Birthday of " + getPlayerName + ": " + playerBirthday);
+                    return true;
+                } else {
+                    getLogger().warning("No birthday found for " + getPlayerName);
+                    return false;
+                }
+            } else {
+                getLogger().warning("Player '" + getPlayerName + "' not found or never played on this server.");
                 return false;
             }
         }
