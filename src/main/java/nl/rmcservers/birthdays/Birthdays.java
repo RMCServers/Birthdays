@@ -289,7 +289,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     
         // Sort the list alphabetically
         getLogger().info("Sorting players...");
-        Collections.sort(playerList);
+        Arrays.sort(playerList, String.CASE_INSENSITIVE_ORDER)
         getLogger().info("Players sorted.");
 
         // Make the final list
@@ -297,7 +297,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         List<String> birthdayList = new ArrayList<>();
         for (String playerName : playerList) {
             birthdayList.add(playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()));
-            getLogger().info("Added " + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + " to list!");
+            getLogger().info("Added '" + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + "' to list!");
         }
         getLogger().info("Players and birthdays added to list.");
 
