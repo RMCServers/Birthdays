@@ -291,7 +291,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
+        getLogger().info("Converting 'playerList' from 'List' to 'ArrayList'...");
         List<String> playerList = new ArrayList<>();
+        getLogger().info("Conversion done.");
         getLogger().info("Looking up players and putting them in a list...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
@@ -300,15 +302,27 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             getLogger().info("Added '" + listPlayerName + "' to list!");
         }
         getLogger().info("Players listed.");
-    
+
+        // Convert 'playerArray' from 'ArrayList' to 'Array'
+        getLogger().info("Converting 'playerList' from 'ArrayList' to 'Array'...");
+        String[] playerArray = playerList.toArray(new String[playerList.size()]);
+        getLogger().info("Conversion done.");
+
         // Sort the list alphabetically
         getLogger().info("Sorting players...");
         Arrays.sort(playerList, String.CASE_INSENSITIVE_ORDER);
         getLogger().info("Players sorted.");
 
+        // Convert the sorted array back to ArrayList
+        getLogger().info("Converting 'playerList' from 'Array' to 'ArrayList'...");
+        playerList = new ArrayList<>(Arrays.asList(playerArray));
+        getLogger().info("Conversion done.");
+
         // Make the final list
-        getLogger().info("Adding players and birthdays to list...");
+        getLogger().info("Converting 'birthdayList' from 'List' to 'ArrayList'...");
         List<String> birthdayList = new ArrayList<>();
+        getLogger().info("Conversion done.");
+        getLogger().info("Adding players and birthdays to list...");
         for (String playerName : playerList) {
             birthdayList.add(playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()));
             getLogger().info("Added '" + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + "' to list!");
