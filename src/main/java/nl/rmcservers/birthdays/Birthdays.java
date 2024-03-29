@@ -82,6 +82,19 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             }
 
             String subCommand = args[0].toLowerCase();
+
+            // Map abbreviations to full subcommands
+            Map<String, String> subCommandMap = new HashMap<>();
+            subCommandMap.put("s", "set");
+            subCommandMap.put("l", "list");
+            subCommandMap.put("r", "remove");
+            subCommandMap.put("g", "get");
+
+            // If the provided subcommand is an abbreviation, replace it with the full subcommand
+            if (subCommandMap.containsKey(subCommand)) {
+                subCommand = subCommandMap.get(subCommand);
+            }
+
             switch (subCommand) {
                 case "set":
                     if (!sender.hasPermission("birthdays.set") && !sender.isOp()) {
