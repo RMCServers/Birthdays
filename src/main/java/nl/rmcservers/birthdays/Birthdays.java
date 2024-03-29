@@ -297,7 +297,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         List<String> birthdayList = new ArrayList<>();
         for (String playerName : playerList) {
             birthdayList.add(playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()));
-            getLogger().info("Added " + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + "!");
+            getLogger().info("Added " + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + " to list!");
         }
         getLogger().info("Players and birthdays added to list.");
 
