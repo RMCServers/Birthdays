@@ -278,20 +278,28 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
         getLogger().info("Looking up birthdays...");
-        List<String> birthdayList = new ArrayList<>();
+        List<String> playerList = new ArrayList<>();
         getLogger().info("Birthdays acquired.");
-        getLogger().info("Listing birthdays...");
+        getLogger().info("Listing players...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
-            String birthday = birthdays.get(playerId);
-            birthdayList.add(listPlayerName + " - " + birthday);
+            playerList.add(listPlayerName);
         }
-        getLogger().info("Birthdays listed.");
+        getLogger().info("Players listed.");
     
         // Sort the list alphabetically
-        getLogger().info("Sorting birthdays...");
-        birthdayList.sort(Comparator.naturalOrder());
-        getLogger().info("Birthdays sorted.");
+        getLogger().info("Sorting players...");
+        playerList.sort(Comparator.naturalOrder());
+        getLogger().info("Players sorted.");
+
+        // Make the final list
+        getLogger().info("Adding players and birthdays to list...");
+        List<String> birthdayList = new ArrayList<>();
+        for (String playerName : playerList) {
+            birthdayList.add(playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()));
+            getLogger().info("Added " + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + "!");
+        }
+        getLogger().info("Players and birthdays added to list.");
 
         return birthdayList;
     }
