@@ -302,7 +302,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     
         // Sort the list alphabetically
         getLogger().info("Sorting players...");
-        Arrays.sort(playerList, String.CASE_INSENSITIVE_ORDER)
+        Arrays.sort(playerList, String.CASE_INSENSITIVE_ORDER);
         getLogger().info("Players sorted.");
 
         // Make the final list
