@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -156,9 +157,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
                     // Get the player's birthday
                     String getPlayerName = args[1];
-                    boolean getSuccess = getPlayerBirthday(getPlayerName);
-                    if (getSuccess) {
-                        sender.sendMessage("Birthday of " + getPlayerName + ": " + playerBirthday);
+                    String getBirthday = getPlayerBirthday(getPlayerName);
+                    if (getBirthday != null) {
+                        sender.sendMessage("Birthday of " + getPlayerName + ": " + getBirthday);
                     } else {
                         sender.sendMessage("No birthday found for " + getPlayerName);
                     }
@@ -334,7 +335,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     }
 
     // Get the player's birthday
-    private boolean getPlayerBirthday(String getPlayerName) {
+    private String getPlayerBirthday(String getPlayerName) {
         getLogger().info("Getting birthday of player '" + getPlayerName + "'...");
 
         // Check if the player is online
@@ -344,10 +345,10 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             String playerBirthday = birthdays.get(playerId);
             if (playerBirthday != null) {
                 getLogger().info("Birthday of " + getPlayerName + ": " + playerBirthday);
-                return true;
+                return playerBirthday;
             } else {
                 getLogger().warning("No birthday found for " + getPlayerName);
-                return false;
+                return null;
             }
         } else {
             // Player is offline, attempt to retrieve UUID
@@ -357,14 +358,14 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 String playerBirthday = birthdays.get(playerId);
                 if (playerBirthday != null) {
                     getLogger().info("Birthday of " + getPlayerName + ": " + playerBirthday);
-                    return true;
+                    return playerBirthday;
                 } else {
                     getLogger().warning("No birthday found for " + getPlayerName);
-                    return false;
+                    return null;
                 }
             } else {
                 getLogger().warning("Player '" + getPlayerName + "' not found or never played on this server.");
-                return false;
+                return null;
             }
         }
     }
