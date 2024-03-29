@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Arrays;
 
 import java.time.Clock;
@@ -290,13 +291,13 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
-        getLogger().info("Looking up birthdays...");
         List<String> playerList = new ArrayList<>();
-        getLogger().info("Birthdays acquired.");
-        getLogger().info("Listing players...");
+        getLogger().info("Looking up players and putting them in a list...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
+            getLogger().info("Found '" + listPlayerName + "'!);
             playerList.add(listPlayerName);
+            getLogger().info("Added '" + listPlayerName + "' to list!);
         }
         getLogger().info("Players listed.");
     
