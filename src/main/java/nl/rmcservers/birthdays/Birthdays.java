@@ -426,7 +426,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     }
                     return onlinePlayerNames;
                 }
-            } else if (("get".equalsIgnoreCase(args[0])) || ("remove".equalsIgnoreCase(args[0])) && args.length == 2) {
+            } else if (("get".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0]) && args.length == 2) {
                 // If two arguments are provided after "/birthday" and the first argument is "get" or "remove",
                 // provide auto-completion based on player names from the birthdays list
 
