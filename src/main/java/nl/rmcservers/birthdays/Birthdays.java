@@ -432,20 +432,20 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
                 getLogger().info("Populating player names for auto-completion...");
 
+                getLogger().info("Converting 'birthdayPlayerNames' from 'List' to 'ArrayList'...");
                 List<String> birthdayPlayerNames = new ArrayList<>();
+                getLogger().info("Conversion done.");
+                getLogger().info("Looking up player names...");
                 for (UUID playerId : birthdays.keySet()) {
-                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
-                    getLogger().info("Offline player retrieved for UUID: " + playerId);
-                    if (offlinePlayer != null && offlinePlayer.getName() != null) {
-                        birthdayPlayerNames.add(offlinePlayer.getName());
-                        getLogger().info("Added player name to auto-completion list: " + offlinePlayer.getName());
-                    }
+                    String suggestPlayerName = getServer().getOfflinePlayer(playerId).getName();
+                    getLogger().info("Found '" + suggestPlayerName + "'!");
+                    birthdayPlayerNames.add(suggestPlayerName);
+                    getLogger().info("Added player name to auto-completion list: " + suggestPlayerName);
                 }
-
                 getLogger().info("Auto-completion list populated: " + birthdayPlayerNames);
-
                 return birthdayPlayerNames;
             } else {
+                getLogger().info("No conditions matched.");
                 // If more than two arguments are provided after "/birthday"
                 return Collections.emptyList(); // Do not suggest anything
             }
