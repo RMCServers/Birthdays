@@ -426,14 +426,15 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     }
                     return onlinePlayerNames;
                 }
-            } else if ((args.length == 2 && "get".equalsIgnoreCase(args[0])) || (args.length == 2 && "remove".equalsIgnoreCase(args[0]))) {
-                // If two arguments are provided after "/birthday" and the first argument is "get"
-                // or if two arguments are provided after "/birthday" and the first argument is "remove",
+            } else if (("get".equalsIgnoreCase(args[0])) || ("remove".equalsIgnoreCase(args[0])) && args.length == 2) {
+                // If two arguments are provided after "/birthday" and the first argument is "get" or "remove",
                 // provide auto-completion based on player names from the birthdays list
-
                 List<String> birthdayPlayerNames = new ArrayList<>();
                 for (UUID playerId : birthdays.keySet()) {
-                    birthdayPlayerNames.add(getServer().getOfflinePlayer(playerId).getName());
+                    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerId);
+                    if (offlinePlayer != null && offlinePlayer.getName() != null) {
+                        birthdayPlayerNames.add(offlinePlayer.getName());
+                    }
                 }
                 return birthdayPlayerNames;
             } else {
