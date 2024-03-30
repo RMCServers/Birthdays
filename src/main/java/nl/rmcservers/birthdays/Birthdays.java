@@ -430,6 +430,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 // If two arguments are provided after "/birthday" and the first argument is "get" or "remove",
                 // provide auto-completion based on player names from the birthdays list
 
+                // Currently doesn't work.
+                // Also needs to be sorted in alphabetical order.
+
                 getLogger().info("Populating player names for auto-completion...");
 
                 getLogger().info("Converting 'birthdayPlayerNames' from 'List' to 'ArrayList'...");
