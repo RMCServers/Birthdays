@@ -46,7 +46,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         // Schedule the task to run every day at 00:00 (midnight)
         scheduleDailyTask();
 
-        // Set up command executor
+        // Set up command executor and tab completer
         getCommand("birthday").setExecutor(this);
         getCommand("birthday").setTabCompleter(this);
 
@@ -57,9 +57,14 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     public void onDisable() {
         // Cancel the scheduled task if it was previously scheduled
         if (taskId != -1) {
+            getLogger().info("Canceling scheduled task.");
             Bukkit.getScheduler().cancelTask(taskId);
             getLogger().info("Scheduled task canceled.");
         }
+
+        // Unregister command and auto-completion
+        getCommand("birthday").setExecutor(null);
+        getCommand("birthday").setTabCompleter(null);
 
         // Save birthdays
         saveBirthdays();
@@ -309,9 +314,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
         // Convert 'playerList' from 'List' to 'ArrayList'
-        getLogger().info("Converting 'playerList' from 'List' to 'ArrayList'...");
         List<String> playerList = new ArrayList<>();
-        getLogger().info("Conversion done.");
 
         // Adding player names to list
         getLogger().info("Looking up players and putting them in a list...");
@@ -324,9 +327,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         getLogger().info("Players listed.");
 
         // Convert 'playerList' from 'ArrayList' to 'Array'
-        getLogger().info("Converting 'playerList' from 'ArrayList' to 'Array'...");
         String[] playerArray = playerList.toArray(new String[playerList.size()]);
-        getLogger().info("Conversion done.");
 
         // Sort the list alphabetically
         getLogger().info("Sorting players...");
@@ -334,14 +335,10 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         getLogger().info("Players sorted.");
 
         // Convert the sorted array back to ArrayList
-        getLogger().info("Converting 'playerArray' from 'Array' to 'ArrayList'...");
         playerList = new ArrayList<>(Arrays.asList(playerArray));
-        getLogger().info("Conversion done.");
 
         // Make the final list
-        getLogger().info("Converting 'birthdayList' from 'List' to 'ArrayList'...");
         List<String> birthdayList = new ArrayList<>();
-        getLogger().info("Conversion done.");
         getLogger().info("Adding players and birthdays to list...");
         for (String playerName : playerList) {
             birthdayList.add(playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()));
