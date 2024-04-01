@@ -1,2 +1,2 @@
 # Default configuration
-birthday_command: "luckperms user %player% parent addtemp jarig 24h accumulate"
+birthday_command: "say Today is the birthday of %player%!"
