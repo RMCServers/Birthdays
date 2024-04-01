@@ -58,7 +58,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         // Cancel the scheduled task if it was previously scheduled
         if (taskId != -1) {
             Bukkit.getScheduler().cancelTask(taskId);
-            getLogger().info("Scheduled task cancelled.");
+            getLogger().info("Scheduled task canceled.");
         }
 
         // Save birthdays
