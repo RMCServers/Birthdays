@@ -479,7 +479,6 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             } else if (("set".equalsIgnoreCase(args[0]) || "s".equalsIgnoreCase(args[0])) && args.length == 3) {
                 // If three arguments are provided after "/birthday" and the first argument is "set" or "s"
                 return Collections.emptyList(); // Do not suggest anything
-            }
             } else {
                 getLogger().info("No conditions matched for auto-completion.");
                 // If more than two arguments are provided after "/birthday"
