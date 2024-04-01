@@ -57,7 +57,6 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     public void onDisable() {
         // Cancel the scheduled task if it was previously scheduled
         if (taskId != -1) {
-            getLogger().info("Canceling scheduled task.");
             Bukkit.getScheduler().cancelTask(taskId);
             getLogger().info("Scheduled task canceled.");
         }
@@ -85,6 +84,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
         // Schedule the task to run at midnight and repeat every 24 hours
         taskId = Bukkit.getScheduler().runTaskTimer(this, this::checkBirthdays, delay / 50L, 24 * 60 * 60 * 20L).getTaskId(); // Convert milliseconds to ticks, schedule the task and store the task ID
+        getLogger().info("Task scheduled.");
     }
 
 
@@ -92,7 +92,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         getLogger().info("Loading configuration...");
         saveDefaultConfig();
         FileConfiguration config = getConfig();
-        birthdayCommand = config.getString("birthday_command", "luckperms user %player% parent addtemp jarig 24h accumulate");
+        birthdayCommand = config.getString("birthday_command", "say Today is the birthday of %player%!");
         getLogger().info("Configuration loaded!");
     }
 
@@ -218,7 +218,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 dataFile.createNewFile();
                 getLogger().info("Successfully created birthdays.json!");
             } catch (IOException e) {
-                getLogger().severe("Failed to create birthdays.json file!");
+                getLogger().severe("Failed to create birthdays.json!");
                 e.printStackTrace();
             }
             return;
@@ -324,13 +324,11 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
             playerList.add(listPlayerName);
             getLogger().info("Added '" + listPlayerName + "' to list!");
         }
-        getLogger().info("Players listed.");
 
         // Convert 'playerList' from 'ArrayList' to 'Array'
         String[] playerArray = playerList.toArray(new String[playerList.size()]);
 
         // Sort the list alphabetically
-        getLogger().info("Sorting players...");
         Arrays.sort(playerArray, String.CASE_INSENSITIVE_ORDER);
         getLogger().info("Players sorted.");
 
@@ -452,18 +450,15 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     getLogger().info("Added player name to auto-completion list: " + suggestPlayerName);
                 }
 
-                getLogger().info("Sorting auto-completion list...");
-
                 // Convert 'birthdayPlayerNames' from 'ArrayList' to 'Array'
                 String[] birthdayPlayerNamesArray = birthdayPlayerNames.toArray(new String[birthdayPlayerNames.size()]);
 
                 // Sort the list alphabetically
                 Arrays.sort(birthdayPlayerNamesArray, String.CASE_INSENSITIVE_ORDER);
+                getLogger().info("Auto-completion list sorted.");
 
                 // Convert the sorted array back to ArrayList
                 birthdayPlayerNames = new ArrayList<>(Arrays.asList(birthdayPlayerNamesArray));
-
-                getLogger().info("Auto-completion list sorted.");
 
                 getLogger().info("Auto-completion list populated: " + birthdayPlayerNames);
                 return birthdayPlayerNames;
