@@ -48,6 +48,22 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         // Set up command executor
         getCommand("birthday").setExecutor(this);
         getCommand("birthday").setTabCompleter(this);
+
+        getLogger().info("Birthdays enabled!");
+    }
+
+    @Override
+    public void onDisable() {
+        // Cancel the scheduled task if it was previously scheduled
+        if (taskId != -1) {
+            Bukkit.getScheduler().cancelTask(taskId);
+            getLogger().info("Scheduled task cancelled.");
+        }
+
+        // Save birthdays
+        saveBirthdays();
+
+        getLogger().info("Birthdays disabled!");
     }
 
     private void scheduleDailyTask() {
