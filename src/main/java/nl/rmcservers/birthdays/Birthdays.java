@@ -291,9 +291,12 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
+        // Convert 'playerList' from 'List' to 'ArrayList'
         getLogger().info("Converting 'playerList' from 'List' to 'ArrayList'...");
         List<String> playerList = new ArrayList<>();
         getLogger().info("Conversion done.");
+
+        // Adding player names to list
         getLogger().info("Looking up players and putting them in a list...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
@@ -303,7 +306,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         }
         getLogger().info("Players listed.");
 
-        // Convert 'playerArray' from 'ArrayList' to 'Array'
+        // Convert 'playerList' from 'ArrayList' to 'Array'
         getLogger().info("Converting 'playerList' from 'ArrayList' to 'Array'...");
         String[] playerArray = playerList.toArray(new String[playerList.size()]);
         getLogger().info("Conversion done.");
@@ -314,7 +317,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         getLogger().info("Players sorted.");
 
         // Convert the sorted array back to ArrayList
-        getLogger().info("Converting 'playerList' from 'Array' to 'ArrayList'...");
+        getLogger().info("Converting 'playerArray' from 'Array' to 'ArrayList'...");
         playerList = new ArrayList<>(Arrays.asList(playerArray));
         getLogger().info("Conversion done.");
 
@@ -417,6 +420,39 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 subCommands.add("remove");
                 subCommands.add("get");
                 return subCommands;
+            } else if (("get".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0])) && args.length == 2) {
+                // If two arguments are provided after "/birthday" and the first argument is "get" or "remove",
+                // provide auto-completion based on player names from the birthdays list
+                
+                getLogger().info("Populating player names for auto-completion...");
+
+                // Adding player names to auto-completion list
+                getLogger().info("Looking up player names...");
+                for (UUID playerId : birthdays.keySet()) {
+                    String suggestPlayerName = getServer().getOfflinePlayer(playerId).getName();
+                    getLogger().info("Found '" + suggestPlayerName + "'!");
+                    birthdayPlayerNames.add(suggestPlayerName);
+                    getLogger().info("Added player name to auto-completion list: " + suggestPlayerName);
+                }
+
+                getLogger().info("Sorting auto-completion list...");
+
+                // Convert 'birthdayPlayerNames' from 'List' to 'ArrayList'
+                List<String> birthdayPlayerNames = new ArrayList<>();
+
+                // Convert 'birthdayPlayerNames' from 'ArrayList' to 'Array'
+                String[] birthdayPlayerNamesArray = birthdayPlayerNames.toArray(new String[birthdayPlayerNames.size()]);
+
+                // Sort the list alphabetically
+                Arrays.sort(birthdayPlayerNamesArray, String.CASE_INSENSITIVE_ORDER);
+
+                // Convert the sorted array back to ArrayList
+                birthdayPlayerNames = new ArrayList<>(Arrays.asList(birthdayPlayerNamesArray));
+
+                getLogger().info("Auto-completion list sorted.");
+
+                getLogger().info("Auto-completion list populated: " + birthdayPlayerNames);
+                return birthdayPlayerNames;
             } else if (args.length == 2 && !"list".equalsIgnoreCase(args[0])) {
                 // If two arguments are provided after "/birthday" and the first argument is not "list"
                 if (args[1].isEmpty()) {
@@ -426,27 +462,6 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     }
                     return onlinePlayerNames;
                 }
-            } else if (("get".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0])) && args.length == 2) {
-                // If two arguments are provided after "/birthday" and the first argument is "get" or "remove",
-                // provide auto-completion based on player names from the birthdays list
-
-                // Currently doesn't work.
-                // Also needs to be sorted in alphabetical order.
-
-                getLogger().info("Populating player names for auto-completion...");
-
-                getLogger().info("Converting 'birthdayPlayerNames' from 'List' to 'ArrayList'...");
-                List<String> birthdayPlayerNames = new ArrayList<>();
-                getLogger().info("Conversion done.");
-                getLogger().info("Looking up player names...");
-                for (UUID playerId : birthdays.keySet()) {
-                    String suggestPlayerName = getServer().getOfflinePlayer(playerId).getName();
-                    getLogger().info("Found '" + suggestPlayerName + "'!");
-                    birthdayPlayerNames.add(suggestPlayerName);
-                    getLogger().info("Added player name to auto-completion list: " + suggestPlayerName);
-                }
-                getLogger().info("Auto-completion list populated: " + birthdayPlayerNames);
-                return birthdayPlayerNames;
             } else {
                 getLogger().info("No conditions matched.");
                 // If more than two arguments are provided after "/birthday"
