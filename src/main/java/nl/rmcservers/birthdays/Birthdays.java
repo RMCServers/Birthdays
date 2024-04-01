@@ -434,7 +434,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 subCommands.add("remove");
                 subCommands.add("get");
                 return subCommands;
-            } else if (("get".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0])) && args.length == 2) {
+            } else if (("get".equalsIgnoreCase(args[0]) || "remove".equalsIgnoreCase(args[0]) || "g".equalsIgnoreCase(args[0]) || "r".equalsIgnoreCase(args[0])) && args.length == 2) {
                 // If two arguments are provided after "/birthday" and the first argument is "get" or "remove",
                 // provide auto-completion based on player names from the birthdays list
                 
@@ -467,7 +467,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
                 getLogger().info("Auto-completion list populated: " + birthdayPlayerNames);
                 return birthdayPlayerNames;
-            } else if (args.length == 2 && !"list".equalsIgnoreCase(args[0])) {
+            } else if (("set".equalsIgnoreCase(args[0]) || "s".equalsIgnoreCase(args[0])) && args.length == 2) {
                 // If two arguments are provided after "/birthday" and the first argument is not "list"
                 if (args[1].isEmpty()) {
                     List<String> onlinePlayerNames = new ArrayList<>();
@@ -477,7 +477,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                     return onlinePlayerNames;
                 }
             } else {
-                getLogger().info("No conditions matched.");
+                getLogger().info("No conditions matched for auto-completion.");
                 // If more than two arguments are provided after "/birthday"
                 return Collections.emptyList(); // Do not suggest anything
             }
