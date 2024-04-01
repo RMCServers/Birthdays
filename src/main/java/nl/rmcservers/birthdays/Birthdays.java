@@ -36,6 +36,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
     private Map<UUID, String> birthdays = new HashMap<>();
     private File dataFile;
     private String birthdayCommand;
+    private int taskId = -1; // Declare taskId as a class-level variable
 
     @Override
     public void onEnable() {
@@ -78,7 +79,7 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         long delay = nextMidnight.toEpochMilli() - now.toEpochMilli();
 
         // Schedule the task to run at midnight and repeat every 24 hours
-        Bukkit.getScheduler().runTaskTimer(this, this::checkBirthdays, delay / 50L, 24 * 60 * 60 * 20L); // Convert milliseconds to ticks
+        taskId = Bukkit.getScheduler().runTaskTimer(this, this::checkBirthdays, delay / 50L, 24 * 60 * 60 * 20L).getTaskId(); // Convert milliseconds to ticks, schedule the task and store the task ID
     }
 
 
@@ -442,6 +443,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 
                 getLogger().info("Populating player names for auto-completion...");
 
+                // Convert 'birthdayPlayerNames' from 'List' to 'ArrayList'
+                List<String> birthdayPlayerNames = new ArrayList<>();
+
                 // Adding player names to auto-completion list
                 getLogger().info("Looking up player names...");
                 for (UUID playerId : birthdays.keySet()) {
@@ -452,9 +456,6 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
                 }
 
                 getLogger().info("Sorting auto-completion list...");
-
-                // Convert 'birthdayPlayerNames' from 'List' to 'ArrayList'
-                List<String> birthdayPlayerNames = new ArrayList<>();
 
                 // Convert 'birthdayPlayerNames' from 'ArrayList' to 'Array'
                 String[] birthdayPlayerNamesArray = birthdayPlayerNames.toArray(new String[birthdayPlayerNames.size()]);
