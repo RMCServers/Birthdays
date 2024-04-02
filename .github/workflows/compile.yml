@@ -5,7 +5,9 @@ on:
   push:
     branches: [ "master" ]
     paths-ignore:
-    - 'README.md'
+      - 'README.md'
+    tags:
+      - v*
 
 jobs:
   build:
