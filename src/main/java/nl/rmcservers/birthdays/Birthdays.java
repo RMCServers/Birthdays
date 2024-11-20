@@ -14,7 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+import java.util.UUID; // For UUID handling
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
@@ -26,7 +26,14 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-import org.json.simple.JSONObject;
+import java.net.HttpURLConnection; // For HTTP connections
+
+import java.io.BufferedReader; // For reading the API response
+import java.io.InputStreamReader; // For InputStream to String conversion
+
+import org.json.simple.JSONObject; // For JSON parsing
+import org.json.simple.JSONValue; // For JSON parsing
+
 import org.bukkit.configuration.file.FileConfiguration;
 
 import nl.rmcservers.birthdays.Utils;
@@ -228,11 +235,69 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         JSONObject json = Utils.loadJSONFromFile(dataFile);
         if (json != null) {
             for (Object key : json.keySet()) {
-                String uuidString = (String) key;
-                String birthday = (String) json.get(uuidString);
-                birthdays.put(UUID.fromString(uuidString), birthday);
+                try {
+                    UUID uuid = UUID.fromString((String) key);
+                    String birthday = (String) json.get(key);
+                    String username = getServer().getOfflinePlayer(uuid).getName();
+                    if (username == null || username.isEmpty()) {
+                        username = fetchUsernameFromMojang(uuid);
+                    }
+
+                    if (username != null) {
+                        birthdays.put(uuid, birthday);
+                        getLogger().info("Loaded birthday: " + username + " (" + uuid + ") -> " + birthday);
+                    } else {
+                        getLogger().warning("Could not resolve username for UUID: " + uuid);
+                    }
+                } catch (Exception e) {
+                    getLogger().warning("Failed to load UUID: " + key);
+                }
             }
         }
+    }
+
+    /**
+     * Fetches the username of a player using Mojang's API.
+     *
+     * @param uuid The UUID of the player.
+     * @return The username, or null if the username could not be fetched.
+     */
+    private String fetchUsernameFromMojang(UUID uuid) {
+        try {
+            // Prepare the API URL
+            String apiUrl = "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replace("-", "");
+            java.net.URL url = new java.net.URL(apiUrl);
+            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+
+            // Check response code
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                // Parse response JSON
+                try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                        new java.io.InputStreamReader(conn.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    // Parse JSON to extract the username
+                    org.json.simple.JSONObject jsonResponse = (org.json.simple.JSONObject) org.json.simple.JSONValue.parse(response.toString());
+                    if (jsonResponse != null) {
+                        return (String) jsonResponse.get("name"); // Extract the "name" field
+                    }
+                }
+            } else {
+                getLogger().warning("Failed to fetch username from Mojang's API for UUID: " + uuid + " (Response Code: " + responseCode + ")");
+            }
+        } catch (Exception e) {
+            getLogger().warning("Error fetching username from Mojang's API for UUID: " + uuid);
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void saveBirthdays() {
