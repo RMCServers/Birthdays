@@ -378,36 +378,31 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
 
     // List all birthdays in alphabetical order
     private List<String> listBirthdays() {
-        // Convert 'playerList' from 'List' to 'ArrayList'
-        List<String> playerList = new ArrayList<>();
+        // Convert 'birthdayList' from 'List' to 'ArrayList'
+        List<String> birthdayList = new ArrayList<>();
 
-        // Adding player names to list
-        getLogger().info("Looking up players and putting them in a list...");
+        // Adding player names and birthdays to list
+        getLogger().info("Looking up birthdays and putting them in a list...");
         for (UUID playerId : birthdays.keySet()) {
             String listPlayerName = getServer().getOfflinePlayer(playerId).getName();
-            getLogger().info("Found '" + listPlayerName + "'!");
-            playerList.add(listPlayerName);
-            getLogger().info("Added '" + listPlayerName + "' to list!");
+            if (listPlayerName == null || listPlayerName.isEmpty()) {
+                listPlayerName = "Unknown Player"; // Fallback if name cannot be resolved
+            }
+            String birthday = birthdays.get(playerId);
+            getLogger().info("Found '" + listPlayerName + " - " + birthday + "'!");
+            birthdayList.add(listPlayerName + " - " + birthday);
+            getLogger().info("Added '" + listPlayerName + " - " + birthday + "' to list!");
         }
 
-        // Convert 'playerList' from 'ArrayList' to 'Array'
-        String[] playerArray = playerList.toArray(new String[playerList.size()]);
+        // Convert 'birthdayList' from 'ArrayList' to 'Array'
+        String[] birthdayArray = birthdayList.toArray(new String[birthdayList.size()]);
 
         // Sort the list alphabetically
-        Arrays.sort(playerArray, String.CASE_INSENSITIVE_ORDER);
+        Arrays.sort(birthdayArray, String.CASE_INSENSITIVE_ORDER);
         getLogger().info("Players sorted.");
 
         // Convert the sorted array back to ArrayList
-        playerList = new ArrayList<>(Arrays.asList(playerArray));
-
-        // Make the final list
-        List<String> birthdayList = new ArrayList<>();
-        getLogger().info("Adding players and birthdays to list...");
-        for (String playerName : playerList) {
-            birthdayList.add(playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()));
-            getLogger().info("Added '" + playerName + " - " + birthdays.get(getServer().getOfflinePlayer(playerName).getUniqueId()) + "' to list!");
-        }
-        getLogger().info("Players and birthdays added to list.");
+        birthdayList = new ArrayList<>(Arrays.asList(birthdayArray));
 
         return birthdayList;
     }
