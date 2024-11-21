@@ -5,7 +5,7 @@
     
     <groupId>nl.rmcservers</groupId>
     <artifactId>birthdays</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     
     <name>Birthdays</name>
@@ -30,6 +30,13 @@
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
     
     <build>
