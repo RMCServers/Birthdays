@@ -315,9 +315,9 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         }
     }
 
-    private void executeBirthdayCommand(UUID playerId) {
+    private void executeBirthdayCommand(String checkPlayerName) {
         getLogger().info("Executing birthday command...");
-        String command = birthdayCommand.replace("%player%", getServer().getOfflinePlayer(playerId).getName());
+        String command = birthdayCommand.replace("%player%", checkPlayerName);
         getServer().dispatchCommand(getServer().getConsoleSender(), command);
     }
 
@@ -366,13 +366,14 @@ public class Birthdays extends JavaPlugin implements CommandExecutor, TabComplet
         getLogger().info("Checking birthdays...");
         for (UUID playerId : birthdays.keySet()) {
             String birthday = birthdays.get(playerId);
+            String checkPlayerName = getServer().getOfflinePlayer(playerId).getName();
             // Check if the system date matches someone's birthday
             // The date format is 'MM-dd'
             String today = Utils.getCurrentDate();
             if (today.equals(birthday)) {
-                executeBirthdayCommand(playerId);
+                executeBirthdayCommand(checkPlayerName);
             }
-            getLogger().info("Checked birthday of player with UUID '" + playerId + "'!");
+            getLogger().info("Checked birthday of player '" + checkPlayerName + "' with UUID '" + playerId + "'!");
         }
     }
 
